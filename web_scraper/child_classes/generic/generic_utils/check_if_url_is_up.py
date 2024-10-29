@@ -11,7 +11,8 @@ from logger.logger import Logger
 logger = Logger(logger_name=__name__)
 
 
-async def check_if_url_is_up(row: NamedTuple,
+async def check_if_url_is_up(idx, # Dummy argument for enumerate.
+                            row: NamedTuple,
                             timeout: int = 10,
                             good_response_list: list=None,
                             bad_response_list: list=None,
@@ -36,6 +37,9 @@ async def check_if_url_is_up(row: NamedTuple,
     raise_value_error_if_absent(good_response_list, bad_response_list)
     # Intialize row.url alias.
     url = row.url
+    logger.info(f"Processing row {idx} with URL '{url}'...")
+    logger.debug(f"row: {row}")
+    mes = None
 
     # Initialize the output dictionary
     output_dict = {
@@ -50,27 +54,29 @@ async def check_if_url_is_up(row: NamedTuple,
     try:
         # Get the status code from the URL.
         timeout_client = aiohttp.ClientTimeout(total=timeout)
-        async with aiohttp.ClientSession(url, timeout=timeout_client) as session:
-            async with session.get() as response:
+        async with aiohttp.ClientSession(timeout=timeout_client) as session:
+            async with session.get(url) as response:
                 output_dict['response_status'] = response.status
 
                 if response.status == 200:
                     output_dict['filter_out'] = False
-                    print(f"{url} is up.")
+                    logger.info(f"{url} is up.")
                 else:
                     logger.warning(f"{url} is down: {response.status}")
+                    output_dict['filter_out'] = True
                     print("Recording then skipping...")
 
     # NOTE We don't raise these, since we want the 404s or any other errors to be recorded.
     except aiohttp.ClientError as e:
-        mes = f"{e.__qualname__} for {url}: {e}"
+        mes = f"ClientError for {url}: {e}"
     except asyncio.TimeoutError:
-        mes = f"{e.__qualname__} for {url}"
+        mes = f"TimeoutError for {url}: {e}"
     except Exception as e:
-        mes = f"{e.__qualname__} for {url}: {e}"
+        mes = f"Unknown Error for {url}: {e}"
     finally:
         if mes:
             logger.error(mes)
+            output_dict['filter_out'] = True
             output_dict['error'] = mes
 
     # Route the dictionary to the appropriate list.

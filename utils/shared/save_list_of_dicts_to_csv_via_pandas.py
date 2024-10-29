@@ -40,7 +40,7 @@ def save_list_of_dicts_to_csv_via_pandas(list_of_dicts: list[dict],
     >>> list_of_dicts_to_csv_via_pandas(data, 'output.csv', logger=my_logger)
     """
     # Type checking.
-    if isinstance(list_of_dicts, list) and isinstance(list_of_dicts[0], dict):
+    if not isinstance(list_of_dicts, list) or not isinstance(list_of_dicts[0], dict):
         error_message = f"list_of_dicts argument is not a list of dicts, but a {type(list_of_dicts)}"
         logger.error(error_message)
         raise ValueError(error_message)

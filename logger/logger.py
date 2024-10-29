@@ -31,6 +31,8 @@ Note: This module requires the 'yaml' package for configuration file parsing.
 from datetime import datetime
 import logging
 import os
+import signal
+import sys
 import time
 from typing import Callable
 import uuid
@@ -140,14 +142,18 @@ class Logger:
         self.logger_folder = debug_log_folder
         self.log_level = log_level if not FORCE_DEFAULT_LOG_LEVEL_FOR_WHOLE_PROGRAM else DEFAULT_LOG_LEVEL
         self.stacklevel = stacklevel
-        self.logger = None
+        self.logger: logging.Logger = None
         self.filename = None
         self.filepath = None
+        self.file_handler = None
         # Formating variables.
         self.asterisk = "\n********************\n"
         self.line = "\n--------------------\n"
         self.exception_symbol = None
-
+        # Register signal handlers
+        # This make it so log files are written even when the program errors or is stopped.
+        self._setup_signal_handlers()
+        self.shutting_down = False # Keep track of shutdown status
 
         # Create the specified log folder if it doesn't exist.
         # This assures that we always have a valid path for the log file.
@@ -176,7 +182,7 @@ class Logger:
                 self.stacklevel = self.stacklevel or 2
 
         # Create the logger itself.
-        self.logger.setLevel(self.log_level)
+        self.logger.setLevel(self.log_level) # Set the default log level.
         self.logger.propagate = False # Prevent logs from being handled by parent loggers
 
         if not self.logger.handlers:
@@ -196,7 +202,46 @@ class Logger:
             # Add handlers to the logger
             self.logger.addHandler(file_handler)
             self.logger.addHandler(console_handler)
-    
+
+    def _setup_signal_handlers(self):
+        """
+        Register the signal handlers.
+        These will be called in case of forced shutdowns and keyboard interrupts.
+        """
+        signal.signal(signal.SIGINT, self._handle_shutdown_signal)
+        signal.signal(signal.SIGTERM, self._handle_shutdown_signal)
+
+    def _handle_shutdown_signal(self, signum: int, frame) -> None:
+        """
+        Handle shutdown signals gracefully
+        """
+        if self.shutting_down:
+            self.logger.warning("Received second shutdown signal! Forcing exit...")
+            sys.exit(1)
+            
+        self.shutting_down = True
+        signal_name = signal.Signals(signum).name
+        
+        self.logger.info(f"Received shutdown signal: {signal_name}")
+        self.logger.info("Starting graceful shutdown...")
+        
+        try:
+            self._cleanup()
+        except Exception as e:
+            self.logger.error(f"Error during cleanup: {e}")
+            sys.exit(1)
+            
+        self.logger.info("Graceful shutdown completed")
+        sys.exit(0)
+
+    def _cleanup(self, signum: int, frame) -> None:
+        """
+        Cleanup logging resources on exit.
+        """
+        for handler in self.logger.handlers:
+            handler.flush()
+        logging.shutdown()
+
     def _f(self, message: str) -> str:
         """
         Format the message with a line of asterisks above and below it.
@@ -288,4 +333,3 @@ class Logger:
 
 # Create singletons of the loggers.
 #logger = Logger()
-

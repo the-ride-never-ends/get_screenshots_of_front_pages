@@ -5,7 +5,7 @@ from typing import Any, Callable, Coroutine, Generator
 from tqdm import asyncio as tqdmasyncio
 
 
-from .create_tasks_list import create_tasks_list
+from .create_tasks_list import create_tasks_list # TODO Fix this. For some reason it returns a Coroutine instead of a list of Coroutines
 from .create_tasks_list_with_outer_task_name import create_tasks_list_with_outer_task_name
 
 
@@ -72,10 +72,10 @@ class Limiter:
                              outer_task_name: str = "",
                              **kwargs
                             ) -> asyncio.Future | Generator:
-        if not inputs:
+        if inputs is None:
             raise ValueError("input_list was not input as a parameter")
 
-        if not func:
+        if func is None:
             raise ValueError("func was not input as a parameter")
 
         # NOTE Adding an outer_task_name changes the tasks list from a list of Coroutines to a list of Tasks.
@@ -83,7 +83,9 @@ class Limiter:
         if outer_task_name and self.progress_bar is False:
             tasks = create_tasks_list_with_outer_task_name(inputs, func, enum, *args, **kwargs)
         else:
-            tasks = create_tasks_list(inputs, func, enum, *args, **kwargs)
+            tasks = [func(idx, row, *args, **kwargs) for idx, row in enumerate(inputs.itertuples(), start=1)]
+
+            #create_tasks_list(inputs, func, enum, *args, **kwargs)
 
         task_list = [
             self.run_task_with_limit(task) for task in tasks

@@ -135,9 +135,9 @@ async def main() -> None:
 if __name__ == "__main__":
     import os
     base_name = os.path.basename(__file__) 
-    program_name = base_name if base_name != "main.py" else os.path.dirname(__file__)
+    program_name = os.path.split(os.path.split(__file__)[0])[1] if base_name != "__main__.py" else os.path.splitext(base_name)[0] 
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print(f"{program_name} program stopped.")
+        print(f"'{program_name}' program stopped.")
 
