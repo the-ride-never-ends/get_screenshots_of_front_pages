@@ -1,0 +1,8 @@
+SYSTEM:
+  SCREENSHOT_SEMAPHORE: 5
+  CHECK_IF_URL_IS_UP_SEMAPHORE: 5
+  DEFAULT_LOG_LEVEL: 10 # CRITICAL = 50, FATAL = CRITICAL, ERROR = 40, WARNING = 30, WARN = WARNING, INFO = 20, DEBUG = 10, NOTSET = 0
+  FORCE_DEFAULT_LOG_LEVEL_FOR_WHOLE_PROGRAM: False # Whether we want to force the whole program to use the default log level, or whether to do it on a file-by-file basis.
+PLAYWRIGHT:
+  HEADLESS: True
+  SLOW_MO: 100

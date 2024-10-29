@@ -1,0 +1,9 @@
+aiohttp
+cryptography
+pandas
+playwright
+pyyaml
+pytest
+pytest-playwright
+tqdm
+webdriver-manager
