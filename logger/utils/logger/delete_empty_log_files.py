@@ -20,7 +20,7 @@ def delete_empty_log_files(root_folder):
                 file_path = os.path.join(root, filename)
                 if os.path.getsize(file_path) == 0: # 0kb
                     os.remove(file_path)
-                    print(f"Deleted empty file: {file_path}")
+                    print(f"Deleted empty file: {filename}")
 
 
 # Auto-clean the debug folder of empty text files.
@@ -31,6 +31,6 @@ def delete_zone_identifier_files(root_folder):
                 file_path = os.path.join(root, filename)
                 if os.path.getsize(file_path) == 0: # 0kb
                     os.remove(file_path)
-                    print(f"Deleted empty file: {file_path}")
+                    print(f"Deleted empty file: {filename}")
 
 

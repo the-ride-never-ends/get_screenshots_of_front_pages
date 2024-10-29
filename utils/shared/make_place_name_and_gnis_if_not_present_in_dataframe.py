@@ -12,11 +12,11 @@ def make_place_name_and_gnis_if_not_present_in_dataframe(df: pd.DataFrame, logge
     if not logger:
         raise ValueError("Logger cannot be none.")
 
-    if not df['place_name']:
+    if 'place_name' not in df.columns or df['place_name'].isnull().all():
         logger.info("'place_name' column not present. Creating from url...")
         df['place_name'] = df['url'].apply(lambda x: x.split('/')[2])
 
-    if not df['gnis']:
+    if 'gnis' not in df.columns or df['gnis'].isnull().all():
         logger.info("'gnis' column not present. Creating from url and place_name...\nNOTE: url THEN place_name.")
         df['gnis'] = make_sha256_hash(df['url'], df['place_name'] )
 

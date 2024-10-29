@@ -8,13 +8,15 @@ def next_step(message: str, step: int=None, stop: bool=False):
 
     step_pattern = re.compile(r'^Step \d+', flags=re.IGNORECASE)
     match = re.match(step_pattern, message)
+    asterisks = '*' * len(message)
+    formatted_message = f"\n{asterisks}\n{message}\n{asterisks}\n"
 
     if stop:
         if match:
             step = int(re.search(r'\d+', match.group()).group())
         if match or step:
             current_step = step - 1
-            result = input(f"Continue to Step {step}? y/n: ")
+            result = input(f"{formatted_message}Continue to Step {step}? y/n: ")
             if result != "y":
                 raise KeyboardInterrupt(f"scrape_the_law program stopped at Step {current_step}.")
             else:

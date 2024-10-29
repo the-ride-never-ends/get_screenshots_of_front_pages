@@ -18,3 +18,4 @@ call deactivate
 
 REM Echo to indicate program completion
 echo PROGRAM EXECUTION COMPLETE.
+timeout /t 30

@@ -7,18 +7,19 @@ import yaml
 def get_config_files() -> dict:
     """
     Load YAML configuration files and return their contents.
-    
-    ### Returns
-    - Dictionary with the loaded configuration data.
-    
-    ### Raises
-    - FileNotFoundError: If either config file is not found.
-    - yaml.YAMLError: If there's an error parsing the YAML files.
+
+    Returns:
+        dict: Loaded configuration data.
+
+    Raises:
+        FileNotFoundError: If either config file is not found.
+        yaml.YAMLError: If there's an error parsing the YAML files.
     """
-    
+
     # Get the filepaths of all the config files.
-    top_level_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    print(f"top_level_dir: {top_level_dir}")
+    # TODO THANKS I HATE IT.
+    top_level_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    #print(f"top_level_dir: {top_level_dir}")
     #main_script_dir = os.path.dirname(os.path.abspath(os.path.join(os.getcwd(), "main.py")))
 
 

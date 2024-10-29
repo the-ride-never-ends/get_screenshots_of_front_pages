@@ -37,6 +37,7 @@ def get_config(path:str, constant:str) -> Any | bool:
             else:
                 print(f"Could not load config {constant}. Using default instead.")
                 return False
+        print(f"'{constant}' set to {data}")
         return data
     except:
         print(f"Could not load config {constant}. Using default instead.")
