@@ -93,7 +93,7 @@ Outputs: A folder of frontpage screenshots in jpeg format, along with 3 CSV reco
       - Constants and global variables use ALL_CAPS.
       - Private variables and methods are named using a single underscore prefix.
       - 3rd party libraries are imported using staandard naming conventions (e.g. import pandas as pd).
-      - Utility file namings follow the same conventions as their primary function or class (e.g. AsyncPlaywrightScrapper class is in AsyncPlaywrightScrapper.py)
+      - Utility file namings follow the same conventions as their primary function or class (e.g. AsyncPlaywrightScraper class is in AsyncPlaywrightScraper.py)
       - Critical orchestration files are one word, undercase (e.g. database.py)
       - **TODO: Standardization of formats**
    2. MySQL follows standard SQL naming conventions.

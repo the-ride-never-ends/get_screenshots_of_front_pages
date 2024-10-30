@@ -13,7 +13,7 @@ def save_list_of_dicts_to_csv_via_pandas(list_of_dicts: list[dict],
                                         index: bool = False,
                                         return_df: bool = False,
                                         logger: Logger = None,
-                                        output_path: str = None,
+                                        mode: str = 'a',
                                         ) -> None|pd.DataFrame:
     """
     Save a list of dictionaries to a CSV file using Pandas DataFrame.
@@ -39,6 +39,7 @@ def save_list_of_dicts_to_csv_via_pandas(list_of_dicts: list[dict],
     >>> data = [{'name': 'John', 'age': 30}, {'name': 'Jane', 'age': 25}]
     >>> list_of_dicts_to_csv_via_pandas(data, 'output.csv', logger=my_logger)
     """
+    logger.debug(f"list_of_dicts\n{list_of_dicts}",f=True)
     # Type checking.
     if not isinstance(list_of_dicts, list) or not isinstance(list_of_dicts[0], dict):
         error_message = f"list_of_dicts argument is not a list of dicts, but a {type(list_of_dicts)}"
@@ -47,10 +48,13 @@ def save_list_of_dicts_to_csv_via_pandas(list_of_dicts: list[dict],
     assert logger, "No logger provided."
 
     # Export list_of_dicts to a CSV file.
-    pd.DataFrame().from_records(list_of_dicts).to_csv(filepath, index=index)
-    logger.info(f"{filepath} saved to {CSV_OUTPUT_FOLDER}.")
+    df = pd.DataFrame().from_records(list_of_dicts)
+    logger.info(f"DataFrame created with shape {df.shape}. Saving to {filepath}...")
+    logger.debug(f"df.head\n{df.head()}",f=True, off=True)
+    if os.path.exists(filepath) and mode == 'a':
+        logger.warning(f"{filepath} already exists. Appending to prevent overwrites...")
+    df.to_csv(filepath, index=index, mode=mode)
+    logger.info(f"{os.path.basename(filepath)} saved to {filepath}.")
 
-    if return_df:
-        return pd.DataFrame().from_records(list_of_dicts)
+    return df if return_df else None
 
-    return

@@ -72,6 +72,9 @@ class Limiter:
                              outer_task_name: str = "",
                              **kwargs
                             ) -> asyncio.Future | Generator:
+        """
+        TODO Make it input agnostic again.
+        """
         if inputs is None:
             raise ValueError("input_list was not input as a parameter")
 

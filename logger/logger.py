@@ -208,8 +208,19 @@ class Logger:
         Register the signal handlers.
         These will be called in case of forced shutdowns and keyboard interrupts.
         """
-        signal.signal(signal.SIGINT, self._handle_shutdown_signal)
-        signal.signal(signal.SIGTERM, self._handle_shutdown_signal)
+        # Standard termination signals
+        signal.signal(signal.SIGINT, self._handle_shutdown_signal)  # Interrupt from keyboard (Ctrl+C)
+        signal.signal(signal.SIGTERM, self._handle_shutdown_signal)  # Termination signal
+
+        # Abnormal termination signals
+        signal.signal(signal.SIGABRT, self._handle_shutdown_signal)  # Abort signal from abort(3)
+        signal.signal(signal.SIGFPE, self._handle_shutdown_signal)  # Floating point exception
+        signal.signal(signal.SIGILL, self._handle_shutdown_signal)  # Illegal Instruction
+        signal.signal(signal.SIGSEGV, self._handle_shutdown_signal)  # Invalid memory reference
+
+        # Windows-specific singal handling
+        if sys.platform == "win32":
+            signal.signal(signal.SIGBREAK, self._handle_shutdown_signal) # Interrupt from keyboard (Ctrl+Break on Windows)
 
     def _handle_shutdown_signal(self, signum: int, frame) -> None:
         """

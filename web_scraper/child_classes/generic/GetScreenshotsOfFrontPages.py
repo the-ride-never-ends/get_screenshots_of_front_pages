@@ -7,7 +7,7 @@ from playwright.async_api import (
 )
 
 
-from web_scraper.base_class.AsyncPlaywrightScrapper import AsyncPlaywrightScrapper
+from web_scraper.base_class.AsyncPlaywrightScraper import AsyncPlaywrightScraper
 from utils.shared.sanitize_filename import sanitize_filename
 from utils.shared.raise_value_error_if_absent import raise_value_error_if_absent
 
@@ -32,7 +32,7 @@ async def get_screenshot_of_front_page_class_wrapper(row,
     return
 
 
-class GetScreenshotsOfFrontPages(AsyncPlaywrightScrapper):
+class GetScreenshotsOfFrontPages(AsyncPlaywrightScraper):
     def __init__(self,
                 domain: str,
                 pw_instance: AsyncPlaywrightContextManager,

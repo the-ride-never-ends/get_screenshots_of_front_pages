@@ -34,7 +34,6 @@ async def main() -> None:
         - A CSV of front page URLS that produced a 200 response.
         - A CSV of front page URLs that failed to produce a 200 response.
     """
-
     # Define CSV file names, then construct their paths.
     next_step("Step 1. Define CSV names and their paths.")
     filenames = [
@@ -86,7 +85,8 @@ async def main() -> None:
     next_step("Step 5. Check if the URLs are up. If they aren't, note that and filter them out.", stop=True)
     # Instantiate limiter class
     limiter = Limiter(semaphore=CHECK_IF_URL_IS_UP_SEMAPHORE, progress_bar=True, )
-    good_response_list = bad_response_list = []
+    good_response_list = [] # NOTE Apprently good_response_list = bad_response_list = [] makes them the same object, rather than the same type of object.
+    bad_response_list = []
 
     # Check if the URLs are up and separate them.
     await limiter.run_async_many(
@@ -98,7 +98,7 @@ async def main() -> None:
 
     # Save the good and bad response lists to CSVs.
     # Good responses are the URLs that return 200 and will go on to processing.
-    # Bad responses are URLs that returna nything else, and will be saved to a CSV for manual review.
+    # Bad responses are URLs that return anything else, and will be saved to a CSV for manual review.
     good_urls_df = save_list_of_dicts_to_csv_via_pandas(good_response_list, 
                                                         path_dict['good_response_urls'],
                                                         logger=logger,
@@ -107,8 +107,9 @@ async def main() -> None:
 
 
     next_step("Step 6. Take screenshots of the the URLs and save them as jpegs to the output folder.", stop=True)
-    success_list = failure_list = []
-    with async_playwright() as pw_instance:
+    success_list = []
+    failure_list = []
+    async with async_playwright() as pw_instance:
 
         # Instantiate the limiter class
         limiter = Limiter(semaphore=SCREENSHOT_SEMAPHORE, progress_bar=True)
@@ -135,6 +136,8 @@ async def main() -> None:
 if __name__ == "__main__":
     import os
     base_name = os.path.basename(__file__) 
+    # If the name of this file is main.py, assume that the program name is its directory name.
+    # Else, assume the program's name is the same as the file's name.
     program_name = os.path.split(os.path.split(__file__)[0])[1] if base_name != "__main__.py" else os.path.splitext(base_name)[0] 
     try:
         asyncio.run(main())
